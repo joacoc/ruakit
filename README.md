@@ -1,6 +1,21 @@
 <p align="center">
-  <img width="500" alt="RuaKit" src="https://github.com/user-attachments/assets/6072a775-92de-4841-9a53-f061f7f71c50" />
+  <picture>
+    <source
+      media="(prefers-color-scheme: light)"
+      srcset="https://github.com/user-attachments/assets/346281fc-bcdb-4fb0-98e4-16a52189dc23"
+    />
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="https://github.com/user-attachments/assets/0f624064-5c66-44b5-bbc9-20d92f356946"
+    />
+    <img
+      width="512"
+      alt="Wordmark"
+      src="https://github.com/user-attachments/assets/346281fc-bcdb-4fb0-98e4-16a52189dc23"
+    />
+  </picture>
 </p>
+
 
 **Runtime for React Use Agents (RUA)**
 
