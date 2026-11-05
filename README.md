@@ -40,6 +40,8 @@ npm install @ruakit/react @ruakit/schema
 
 A planner endpoint (`/v1/plan`) receives the user's `prompt` and a `snapshot` of the page and returns a valid [plan](https://github.com/joacoc/ruakit/blob/main/docs/schema.md#a-complete-plan). The plan is defined by a [Zod](https://zod.dev) schema, so passing the schema to your model guarantees a valid response. We strongly recommend reading [`How RuaKit works`](https://github.com/joacoc/ruakit/blob/main/docs/how-it-works.md) to understand the runtime and planner behaviour.
 
+The example below uses the `ai` library as one option. You can use any provider or SDK you already have, as long as your endpoint returns JSON that matches `planSchema`.
+
 ```ts
 // In Next.js: app/v1/plan/route.ts
 import { generateObject } from "ai";
