@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript';
 import { expect, it } from 'vitest';

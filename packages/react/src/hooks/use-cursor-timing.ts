@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { useCallback, useMemo, useRef } from "react";
 import type { MutableRefObject } from "react";
 import { useReducedMotion } from "motion/react";

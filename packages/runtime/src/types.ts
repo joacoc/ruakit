@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 
 /** A reference returned by getState. Keep both fields when passing it across a boundary. */
 export interface Target {

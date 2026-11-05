@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { FormEvent, ReactElement } from "react";
 import { PaperAirplaneIcon, StopIcon } from "@heroicons/react/24/solid";

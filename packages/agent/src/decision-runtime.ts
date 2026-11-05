@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { RuaKitError } from './errors.js';
 import { validateRequestTimeout } from './operations.js';
 import type { RuntimeOptions, RuaKitRuntime } from './runtime.js';

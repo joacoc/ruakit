@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { expect, it } from 'vitest';
 import { RuntimeError } from '@ruakit/runtime';
 import { RuaKitError, toRequestError } from '../dist/index.js';

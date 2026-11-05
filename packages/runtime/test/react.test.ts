@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 // @vitest-environment jsdom
 import { createElement, useState } from 'react';
 import { createRoot } from 'react-dom/client';

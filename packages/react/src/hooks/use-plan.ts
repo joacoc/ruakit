@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import {
   INITIAL_REQUEST_STATE,

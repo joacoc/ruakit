@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 export { createRuntime } from './runtime.js';
 export type { RuntimeOptions, PlanRuntimeOptions, RequestOptions, RuaKitRuntime } from './runtime.js';
 export { createSession } from './session.js';

@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { useEffect, useRef } from "react";
 import type { RefObject } from "react";
 import type { CursorPoint } from "../lib/cursor-position.js";

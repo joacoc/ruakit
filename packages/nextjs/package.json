@@ -3,7 +3,7 @@
   "version": "0.1.0-alpha.1",
   "description": "Server-side Next.js route handler for RuaKit planning",
   "type": "module",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "files": [
     "dist",
     "src",

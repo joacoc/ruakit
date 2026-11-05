@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import type { Clarification, ExecutionResult } from '@ruakit/schema';
 import { RuntimeError } from '@ruakit/runtime';
 import type { RuntimeErrorCode as BrowserErrorCode } from '@ruakit/runtime';

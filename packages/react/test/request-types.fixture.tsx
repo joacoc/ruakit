@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { createElement } from 'react';
 import { Rua, RuaCursor, useRua, usePlan } from '../dist/index.js';
 import { RuaCursor as ControlledCursor } from '../dist/lib/controlled.js';

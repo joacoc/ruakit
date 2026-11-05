@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { REQUEST_MESSAGES } from './constants.js';
 import type { Clarification, ExecutionResult } from "@ruakit/schema";
 import type { RequestError, RequestIdentity } from "./request-outcome.js";

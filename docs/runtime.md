@@ -305,4 +305,3 @@ pnpm --filter @ruakit/runtime test
 ```
 
 Tests cover observation, actions, React inputs, navigation, and cancellation.
-The package ships ESM, TypeScript declarations, and source under Apache-2.0.

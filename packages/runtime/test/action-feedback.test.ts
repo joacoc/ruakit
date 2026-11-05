@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 // @vitest-environment jsdom
 import { afterEach, expect, it, vi } from 'vitest';
 import { withActionFeedback } from '../src/action-feedback.js';

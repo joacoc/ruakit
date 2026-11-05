@@ -3,7 +3,7 @@
   "version": "0.1.0-alpha.1",
   "description": "Rua React toolbar and request hook",
   "type": "module",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "files": [
     "dist",
     "src",

@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { RUNTIME_META_NAME } from '@ruakit/schema';
 import type { ClarificationTurn, ExecutionResult } from '@ruakit/schema';
 import { RuaKitError } from './errors.js';

@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { decisionSchema } from '@ruakit/schema';
 import type { DecisionRequest, Decision } from '@ruakit/schema';
 import { RuaKitError, parsePayload } from './errors.js';

@@ -3,7 +3,7 @@
   "version": "0.1.0-alpha.1",
   "description": "Framework-agnostic agent orchestration",
   "type": "module",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "files": [
     "dist",
     "src",

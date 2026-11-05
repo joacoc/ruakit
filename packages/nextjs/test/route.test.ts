@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { afterEach, expect, it, vi } from "vitest";
 import { createRouteHandler } from "../src/index.js";
 import { createRouteHandler as createServerRouteHandler } from "@ruakit/nextjs/server";

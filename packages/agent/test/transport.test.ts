@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { expect, it, vi } from 'vitest';
 import type { DecisionRequest } from '@ruakit/schema';
 import { createHttpTransport } from '../src/transport.js';

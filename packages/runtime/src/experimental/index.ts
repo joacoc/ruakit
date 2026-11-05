@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { pause, withDeadline } from '../operations.js';
 import { RuntimeError } from '../errors.js';
 import type { ActionOptions } from '../types.js';

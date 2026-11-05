@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 // eslint-disable-next-line @typescript-eslint/triple-slash-reference -- Ship CSS import types to consumers without requiring host declarations.
 /// <reference path="./styles.d.ts" preserve="true" />
 "use client";

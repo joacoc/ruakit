@@ -3,7 +3,7 @@
   "version": "0.1.0-alpha.1",
   "description": "Observe and interact with the rendered application",
   "type": "module",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "files": [
     "dist",
     "src",

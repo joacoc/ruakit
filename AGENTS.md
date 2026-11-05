@@ -60,7 +60,7 @@ Do not assume those checks exist because the tools appear in `package.json`.
 - Coordinate protocol changes across schemas, producers, consumers, tests, and package documentation.
 - Expose public APIs through the package entry points and `package.json` exports.
   Use workspace package imports across packages instead of importing another package's source files.
-- Preserve Apache-2.0 source headers, package `LICENSE` and `NOTICE` files, and bundled dependency notices.
+- Preserve MIT source headers, package `LICENSE` and `NOTICE` files, and bundled dependency notices.
 
 ## Behavior to preserve
 

@@ -1,4 +1,4 @@
-/* Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0 */
+/* Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT */
 /* Rules are scoped to Rua UI. No host reset or utility layer is required. */
 .ruakit-toolbar[data-ruakit-toolbar] {
   all: initial;

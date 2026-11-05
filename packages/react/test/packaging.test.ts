@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { readFile } from 'node:fs/promises';
 import { createElement } from 'react';
 import { renderToString } from 'react-dom/server';

@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import type { ApprovalDecision, PlanApproval } from '@ruakit/schema';
 import type { PageState } from '@ruakit/runtime';
 import { ApprovalNeededError, RuaKitError } from './errors.js';

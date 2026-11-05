@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { planResponseSchema, RUNTIME_META_NAME } from '@ruakit/schema';
 import type { PlanRequest, PlanResponse } from '@ruakit/schema';
 import { RuaKitError, parsePayload } from './errors.js';

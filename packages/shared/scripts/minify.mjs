@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { build } from "esbuild";
@@ -38,6 +38,6 @@ await build({
   sourcemap: true,
   legalComments: "inline",
   banner: {
-    js: "// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0",
+    js: "// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT",
   },
 });

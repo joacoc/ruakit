@@ -2,7 +2,7 @@
   "name": "ruakit-workspace",
   "private": true,
   "type": "module",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "packageManager": "pnpm@11.5.3",
   "engines": {
     "node": "^22.22.2 || >=24.15.0"

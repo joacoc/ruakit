@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { fileURLToPath } from "node:url";
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -31,7 +31,7 @@ const result = await build({
   ],
   legalComments: "linked",
   banner: {
-    js: '"use client";\n// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0',
+    js: '"use client";\n// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT',
   },
   metafile: true,
   footer: {

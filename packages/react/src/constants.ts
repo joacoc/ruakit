@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 
 /** Fixed text used by the toolbar and its preview. */
 export const TOOLBAR_TEXT = {

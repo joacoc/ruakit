@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 
 export const cursorSpeedPixelsPerSecond = 1200;
 const distanceSampleCount = 240;

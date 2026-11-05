@@ -1,4 +1,4 @@
-// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0
+// Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { TOOLBAR_PREVIEW_MESSAGES } from "./constants.js";
 // Local presentation demo. It does not construct an agent or call a planner.
 import { useEffect, useRef, useState } from "react";
