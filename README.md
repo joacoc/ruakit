@@ -38,27 +38,23 @@ npm install @ruakit/react @ruakit/schema
 
 #### 1. Set up an endpoint
 
-A planner endpoint (`/v1/plan`) receives the user's `prompt` and a `snapshot` of the page and returns a valid [plan](https://github.com/joacoc/ruakit/blob/main/docs/schema.md#a-complete-plan). The plan is defined by a [Zod](https://zod.dev) schema, so passing the schema to your model guarantees a valid response. We strongly recommend reading [`How RuaKit works`](https://github.com/joacoc/ruakit/blob/main/docs/how-it-works.md) to understand the runtime and planner behaviour.
+A planner endpoint (`/v1/plan`) receives the user's `prompt` and a `snapshot` of the page and returns a valid [plan](https://github.com/joacoc/ruakit/blob/main/docs/schema.md#a-complete-plan) or an approval, clarification, screenshot, or unsupported response. These responses are defined by a [Zod](https://zod.dev) schema, so passing the schema to your model guarantees a valid response. We strongly recommend reading [`How RuaKit works`](https://github.com/joacoc/ruakit/blob/main/docs/how-it-works.md) to understand the runtime and planner behaviour.
 
-The example below uses the `ai` library as one option. You can use any provider or SDK you already have, as long as your endpoint returns JSON that matches `planSchema`.
+The example below uses the `ai` library as one option. You can use any provider or SDK you already have, as long as your endpoint returns JSON that matches `planResponseSchema`.
 
 ```ts
 // In Next.js: app/v1/plan/route.ts
 import { generateObject } from "ai";
-import { planRequestSchema, planSchema } from "@ruakit/schema";
+import { planRequestSchema, planResponseSchema } from "@ruakit/schema";
 
 export async function POST(req: Request) {
   const input = planRequestSchema.parse(await req.json());
 
   const { object } = await generateObject({
     model: "your-model",
-    schema: planSchema,
-    system: `
-      Build UI plans using supported actions and observed controls.
-      Proceed with simple actions without extra confirmation.
-      Clarify missing details. Request approval for consequential actions and protect credentials.
-      Define checks for every outcome. Preserve them and never repeat completed actions when replanning.
-    `,
+    schema: planResponseSchema,
+    // Replace "..." with docs/PROMPT.md, and adapt to your application.
+    system: `...`,
     prompt: JSON.stringify(input),
   });
 
