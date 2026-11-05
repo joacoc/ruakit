@@ -1,0 +1,12 @@
+node_modules/
+.pnpm-store/
+dist/
+.next/
+*.tsbuildinfo
+.tanstack/
+results/
+*.tgz
+.DS_Store
+.env
+.env.*
+!.env.example

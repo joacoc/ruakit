@@ -1,0 +1,11 @@
+packages:
+  - packages/*
+  - tests/e2e
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+  unrs-resolver: true
+
+minimumReleaseAge: 1440
+verifyDepsBeforeRun: false

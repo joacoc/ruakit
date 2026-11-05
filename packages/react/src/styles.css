@@ -1,0 +1,467 @@
+/* Copyright 2026 RuaKit contributors. SPDX-License-Identifier: Apache-2.0 */
+/* Rules are scoped to Rua UI. No host reset or utility layer is required. */
+.ruakit-toolbar[data-ruakit-toolbar] {
+  all: initial;
+  box-sizing: border-box;
+  position: fixed;
+  inset-inline: 16px;
+  bottom: var(--ruakit-bottom, 24px);
+  z-index: var(--ruakit-z-index, 10000);
+  display: flex;
+  justify-content: center;
+  max-width: var(--ruakit-max-width, 576px);
+  margin-inline: auto;
+  color: var(--ruakit-text, #fff);
+  font:
+    16px/1.5 system-ui,
+    sans-serif;
+  pointer-events: none;
+  color-scheme: dark;
+  isolation: isolate;
+}
+
+[data-ruakit-toolbar] .ruakit-panel {
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  max-width: 100%;
+  overflow: hidden;
+  border: 0;
+  background: var(--ruakit-background, #2f2f2f);
+  cursor: default;
+  pointer-events: auto;
+}
+
+[data-ruakit-toolbar] .ruakit-panel[data-expanded="true"] {
+  box-shadow: 0 10px 20px rgb(0 0 0 / 20%);
+}
+
+[data-ruakit-toolbar] .ruakit-opener,
+[data-ruakit-toolbar] .ruakit-send,
+[data-ruakit-toolbar] .ruakit-input {
+  all: unset;
+  box-sizing: border-box;
+  font: inherit;
+  color: inherit;
+}
+
+[data-ruakit-toolbar] .ruakit-opener {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  cursor: default;
+}
+
+[data-ruakit-toolbar] .ruakit-form {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 100%;
+  margin: 0;
+  padding: 0 12px 0 20px;
+}
+
+[data-ruakit-toolbar] .ruakit-input {
+  display: block;
+  flex: 1;
+  min-width: 0;
+  height: 28px;
+  padding: 0 8px;
+  overflow: hidden;
+  resize: none;
+  white-space: pre;
+  font-size: 14px;
+  line-height: 28px;
+  cursor: default;
+}
+
+[data-ruakit-toolbar] .ruakit-input:focus {
+  cursor: text;
+}
+
+[data-ruakit-toolbar] .ruakit-input::placeholder {
+  color: inherit;
+  opacity: 0.8;
+}
+
+[data-ruakit-toolbar] .ruakit-send {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--ruakit-button-background, #fff);
+  color: var(--ruakit-button-text, var(--ruakit-background, #2f2f2f));
+  cursor: pointer;
+}
+
+[data-ruakit-toolbar] .ruakit-send:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+[data-ruakit-toolbar] .ruakit-send:focus-visible,
+[data-ruakit-toolbar] .ruakit-opener:focus-visible {
+  outline: 2px solid var(--ruakit-focus, #a1a1aa);
+  outline-offset: -3px;
+}
+
+[data-ruakit-toolbar] .ruakit-icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  color: inherit;
+}
+
+[data-ruakit-toolbar] .ruakit-message-surface {
+  box-sizing: border-box;
+  position: absolute;
+  z-index: 0;
+  bottom: calc(100% - 16px);
+  border: 0;
+  border-radius: 16px 16px 0 0;
+  background: var(--ruakit-message-background, #242424);
+  box-shadow: inset 0 -12px 18px -12px rgb(0 0 0 / 30%);
+  color: var(--ruakit-message-text, #d4d4d8);
+  overflow-wrap: anywhere;
+}
+
+/* Retain the opaque surface as a readable fallback without backdrop filtering. */
+@supports (backdrop-filter: blur(20px)) or (-webkit-backdrop-filter: blur(20px)) {
+  [data-ruakit-toolbar][data-message-style="glass"] .ruakit-message-surface {
+    background: var(--ruakit-message-background, rgb(36 36 36 / 60%));
+    box-shadow: none;
+    -webkit-backdrop-filter: blur(20px) saturate(140%);
+    backdrop-filter: blur(20px) saturate(140%);
+    color: var(--ruakit-message-text, #e4e4e7);
+  }
+}
+
+[data-ruakit-toolbar] .ruakit-status {
+  left: 50%;
+  translate: -50% 0;
+  width: max-content;
+  min-width: min(240px, calc(100% - 48px));
+  max-width: calc(100% - 48px);
+  margin: 0;
+  padding: 8px 18px 24px;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--ruakit-message-text, #b5b5bc);
+}
+
+[data-ruakit-toolbar] .ruakit-status > span {
+  min-width: 0;
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  [data-ruakit-toolbar] .ruakit-status-busy {
+    background-image: linear-gradient(
+      110deg,
+      var(--ruakit-message-text, #909099) 25%,
+      var(--ruakit-message-highlight, #ededf0) 50%,
+      var(--ruakit-message-text, #909099) 75%
+    );
+    /* This size makes the animation travel exactly one repeated gradient tile. */
+    background-size: 200% 100%;
+    background-repeat: repeat-x;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: ruakit-status-shimmer 2.8s linear infinite;
+  }
+}
+
+@keyframes ruakit-status-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+[data-ruakit-toolbar] .ruakit-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 639px) {
+  [data-ruakit-toolbar] .ruakit-form {
+    padding-left: 12px;
+  }
+}
+
+@media (forced-colors: active) {
+  [data-ruakit-toolbar] .ruakit-panel,
+  [data-ruakit-toolbar] .ruakit-send,
+  [data-ruakit-toolbar][data-message-style] .ruakit-message-surface {
+    border-color: ButtonText;
+  }
+  [data-ruakit-toolbar][data-message-style] .ruakit-message-surface {
+    background: Canvas;
+    color: CanvasText;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+[data-ruakit-toolbar] .ruakit-clarification {
+  inset-inline: 24px;
+  max-height: min(50vh, 360px);
+  overflow: auto;
+  padding: 18px 20px 34px;
+  pointer-events: auto;
+  font-size: 14px;
+}
+
+[data-ruakit-toolbar] .ruakit-original {
+  margin: 0 0 8px;
+  color: inherit;
+  font-size: 12px;
+  opacity: 0.75;
+}
+
+[data-ruakit-toolbar] .ruakit-question {
+  margin: 0 0 14px;
+}
+
+[data-ruakit-toolbar] .ruakit-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+[data-ruakit-toolbar] .ruakit-option,
+[data-ruakit-toolbar] .ruakit-start-over {
+  all: unset;
+  box-sizing: border-box;
+  font: inherit;
+  cursor: pointer;
+}
+
+[data-ruakit-toolbar] .ruakit-option {
+  max-width: 100%;
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--ruakit-button-background, #343437);
+  cursor: default;
+  transition: background-color 120ms ease-out;
+}
+
+[data-ruakit-toolbar] .ruakit-option:hover {
+  background: var(--ruakit-button-hover-background, #414144);
+}
+
+[data-ruakit-toolbar][data-message-style="glass"] .ruakit-option {
+  background: var(--ruakit-button-background, rgb(255 255 255 / 12%));
+}
+
+[data-ruakit-toolbar][data-message-style="glass"] .ruakit-option:hover {
+  background: var(--ruakit-button-hover-background, rgb(255 255 255 / 20%));
+}
+
+[data-ruakit-toolbar] .ruakit-start-over {
+  margin-top: 14px;
+  color: var(--ruakit-message-text, #d4d4d8);
+  font-size: 12px;
+  text-decoration: underline;
+}
+
+[data-ruakit-toolbar] .ruakit-option:focus-visible,
+[data-ruakit-toolbar] .ruakit-start-over:focus-visible {
+  outline: 2px solid var(--ruakit-focus, #a1a1aa);
+  outline-offset: 3px;
+}
+
+.ruakit-cursor[data-ruakit-cursor] {
+  all: initial;
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--ruakit-z-index, 10000) + 1);
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+  color: var(--ruakit-cursor-color, #7c3aed);
+  transition: opacity 120ms ease-out;
+}
+
+[data-ruakit-cursor] * {
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+[data-ruakit-cursor] .ruakit-cursor-content {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+
+[data-ruakit-cursor][data-offscreen="true"] .ruakit-cursor-pointer {
+  visibility: hidden;
+}
+
+[data-ruakit-cursor] .ruakit-cursor-edge {
+  position: absolute;
+  opacity: 0;
+}
+
+[data-ruakit-cursor] .ruakit-cursor-edge[data-edge="top"] {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 24px;
+  background: linear-gradient(to bottom, currentColor, transparent);
+}
+
+[data-ruakit-cursor] .ruakit-cursor-edge[data-edge="bottom"] {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 24px;
+  background: linear-gradient(to top, currentColor, transparent);
+}
+
+[data-ruakit-cursor] .ruakit-cursor-edge[data-edge="left"] {
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  background: linear-gradient(to right, currentColor, transparent);
+}
+
+[data-ruakit-cursor] .ruakit-cursor-edge[data-edge="right"] {
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  background: linear-gradient(to left, currentColor, transparent);
+}
+
+[data-ruakit-cursor][data-edge-top="true"] .ruakit-cursor-edge[data-edge="top"],
+[data-ruakit-cursor][data-edge-bottom="true"] .ruakit-cursor-edge[data-edge="bottom"],
+[data-ruakit-cursor][data-edge-left="true"] .ruakit-cursor-edge[data-edge="left"],
+[data-ruakit-cursor][data-edge-right="true"] .ruakit-cursor-edge[data-edge="right"] {
+  opacity: 0.12;
+}
+
+[data-ruakit-cursor] .ruakit-cursor-pointer {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+}
+
+[data-ruakit-cursor] .ruakit-cursor-heading {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  transform-origin: 0 0;
+}
+
+[data-ruakit-cursor] .ruakit-cursor-arrow {
+  position: absolute;
+  left: -2px;
+  top: -2px;
+  display: block;
+  width: 26px;
+  height: 28px;
+  max-width: none;
+  color: inherit;
+}
+
+[data-ruakit-cursor] .ruakit-cursor-label {
+  position: absolute;
+  left: 18px;
+  top: 23px;
+  display: block;
+  margin: 0;
+  padding: 2px 7px;
+  border: 1px solid rgb(255 255 255 / 80%);
+  border-radius: 5px;
+  background: var(--ruakit-cursor-color, #7c3aed);
+  box-shadow: 0 2px 5px rgb(0 0 0 / 18%);
+  color: #fff;
+  font:
+    600 11px/1.5 system-ui,
+    sans-serif;
+  white-space: nowrap;
+}
+
+[data-ruakit-cursor] .ruakit-cursor-highlight {
+  position: absolute;
+  border: 2px solid var(--ruakit-cursor-color, #7c3aed);
+  border-radius: 6px;
+  box-shadow: 0 0 0 3px rgb(124 58 237 / 14%);
+  background: rgb(124 58 237 / 5%);
+  opacity: 0.65;
+}
+
+[data-ruakit-cursor][data-phase="after"] .ruakit-cursor-highlight {
+  opacity: 1;
+}
+
+[data-ruakit-cursor] .ruakit-cursor-click {
+  position: absolute;
+  left: -12px;
+  top: -12px;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--ruakit-cursor-color, #7c3aed);
+  border-radius: 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-ruakit-toolbar] .ruakit-option {
+    transition: none;
+  }
+  [data-ruakit-toolbar] .ruakit-status-busy {
+    animation: none;
+    background: none;
+    color: inherit;
+  }
+  .ruakit-cursor[data-ruakit-cursor] {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  [data-ruakit-toolbar] .ruakit-status-busy {
+    animation: none;
+    background: none;
+    color: CanvasText;
+  }
+  [data-ruakit-cursor] .ruakit-cursor-highlight,
+  [data-ruakit-cursor] .ruakit-cursor-click {
+    border-color: Highlight;
+  }
+  [data-ruakit-cursor] .ruakit-cursor-label {
+    background: Highlight;
+    color: HighlightText;
+  }
+  [data-ruakit-cursor] .ruakit-cursor-edge[data-edge] {
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+}

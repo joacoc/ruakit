@@ -1,0 +1,32 @@
+{
+  "name": "@ruakit/nextjs",
+  "version": "0.1.0-alpha.1",
+  "description": "Server-side Next.js route handler for RuaKit planning",
+  "type": "module",
+  "license": "Apache-2.0",
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "sideEffects": true,
+  "scripts": {
+    "build": "tsc -p tsconfig.json && node ../shared/scripts/minify.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "server-only": "0.0.1"
+  }
+}
