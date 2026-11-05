@@ -1,6 +1,7 @@
 // Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { z } from "zod";
 import { completionChecksSchema, screenshotSchema } from "./verification.js";
+import { linkNavigationSchema } from "./navigation.js";
 
 /** Identifies a control in a particular observation. */
 const target = z.strictObject({
@@ -145,7 +146,15 @@ export const decisionRequestSchema = z.strictObject({
   prompt: z.string().trim().min(1).max(2000),
   clarifications: z.array(clarification).max(3),
   snapshot,
-  history: z.array(decisionSchema).max(20),
+  history: z.array(z.union([
+    decisionSchema,
+    decisionSchema.options[0].extend({ navigation: linkNavigationSchema }).refine(
+      (entry) => entry.step.type === "click", "Only a completed click can have navigation feedback.",
+    ),
+    approvalDecisionSchema.extend({ navigation: linkNavigationSchema }).refine(
+      (entry) => entry.step.type === "click", "Only a completed click can have navigation feedback.",
+    ),
+  ])).max(20),
   checks: completionChecksSchema.nullable().optional(),
   canScreenshot: z.boolean().optional(),
   screenshot: screenshotSchema.optional(),

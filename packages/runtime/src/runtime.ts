@@ -15,6 +15,7 @@ import { withActionFeedback } from "./action-feedback.js";
 import { captureScreenshot } from "./screenshot.js";
 import type {
   ActionOptions,
+  LinkNavigation,
   PageState,
   Runtime,
   RuntimeAction,
@@ -222,11 +223,30 @@ export function createRuntime(options: RuntimeOptions = {}): Runtime {
       return run(settings, (signal) => captureScreenshot(root, signal));
     },
 
-    click(target, settings = {}) {
-      return act(settings, () => targets.resolve(target).click(), {
-        action: "click",
-        target,
-      });
+    async click(target, settings = {}) {
+      let navigation: LinkNavigation | undefined;
+      const state = await act(settings, () => {
+        const element = targets.resolve(target);
+        const link = element.closest('a[href]');
+        let activation: MouseEvent | undefined;
+        const capture = (event: MouseEvent): void => { activation = event; };
+        element.addEventListener('click', capture, { capture: true, once: true });
+        try {
+          element.click();
+          // Inspect after application handlers have run, before observational
+          // feedback. A prevented click or download is not native navigation.
+          if (
+            activation && !activation.defaultPrevented &&
+            link instanceof view.HTMLAnchorElement && link.isConnected &&
+            !link.hasAttribute('download') &&
+            (link.target || document.querySelector('base[target]')?.getAttribute('target'))?.toLowerCase() === '_blank' &&
+            ['http:', 'https:'].includes(link.protocol)
+          ) navigation = { url: link.href, target: '_blank' };
+        } finally {
+          element.removeEventListener('click', capture, true);
+        }
+      }, { action: "click", target });
+      return navigation ? { ...state, navigation } : state;
     },
 
     focus(target, settings = {}) {

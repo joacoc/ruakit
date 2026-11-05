@@ -174,11 +174,8 @@ There are no numeric accessibility indices, screenshot coordinates, or screensho
 
 Every asynchronous interaction method returns a fresh `PageState` after allowing application event handlers to render.
 `click()` returns `ClickResult`, which extends `PageState` with optional `navigation: { url: string, target: "_blank" }`.
-This metadata reports an uncancelled native HTTP(S) link activation, including an inherited `<base target="_blank">`.
-Cancelled clicks and downloads do not produce it. Later observations do not retain it.
-The browser may block the new tab; activation does not prove that the destination opened or loaded.
-When `navigation` is present, hand control back to the host. Do not repeat the click because the original page is unchanged,
-continue later actions against the original page, or claim outcomes in the unobserved destination.
+This records an uncancelled native HTTP(S) new-tab activation, not destination loading or access to another document.
+Cancelled clicks, downloads, and later observations do not include it.
 `screenshot()` instead returns an image with capture metadata.
 That observation can still precede a delayed server response.
 Use `waitFor` with a concrete state predicate when a result arrives later.
@@ -231,7 +228,7 @@ Once the requested result is visible, stop exploring and report the result.
 - Use `goto` only when the host supplies its router callback and you know the destination.
   RuaKit does not maintain a route catalog or discover capabilities on other pages.
   `goto` cannot navigate across origins. Browser back, forward, reload, and tab management are outside this API.
-  Observed links can still open new tabs through native `click` behavior; follow the navigation handoff rules above.
+  Observed links can still open new tabs through native `click` behavior; use the navigation receipts described above.
 
 ## Deadlines, cancellation, and errors
 
@@ -636,16 +633,12 @@ plan. Establish generated content before inserting it. If request `checks` is
 non-null, copy it exactly; never replace, drop, or weaken established checks.
 Use native field checks for entry and fresh acknowledgement checks for saves or
 submissions. The browser verifies completion; proposing a plan is not success.
-Use an empty `steps` array only when all requested outcomes already hold in the
-current snapshot, with explicit checks establishing those outcomes.
-
-An uncancelled native HTTP(S) link activation targeting `_blank` ends plan execution
-and hands control back without executing later steps, requesting a replacement plan,
-or calling `verifyCompletion`. `executePlan` reports `status: "completed"` with a
-`result.status: "triggered"` receipt, without `goalCompleted: true` or `verification`.
-This reports activation only; it does not prove that the new tab opened or loaded.
+Return empty `steps` when outcomes hold or no supported work remains.
+This ends execution; `goalCompleted` and `verification` require passing checks.
+Describe any unverified outcome accurately.
 
 When `replan` is non-null, set `replacesPlanId` to `replan.planId`, use a new plan
 ID, and inspect `completedSteps`, `failedStepId`, `reason`, and the current snapshot.
 Plan only the remaining work. Do not repeat completed actions, particularly
 submissions or other actions that could create duplicate effects.
+Completed clicks may include the `navigation` receipts described above.

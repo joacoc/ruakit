@@ -6,6 +6,8 @@ import { motion, useReducedMotion } from "motion/react";
 import type { RequestState } from "@ruakit/agent";
 import { TOOLBAR_TEXT } from "../constants.js";
 
+const AUTO_DISMISS_MS = 3000;
+
 export interface ToolbarProps {
   prompt: string;
   placeholder: string;
@@ -111,7 +113,7 @@ export function Toolbar({
       dismissTimer.current = setTimeout(() => {
         dismissTimer.current = undefined;
         setDismissedStatus(statusKey);
-      }, 900);
+      }, AUTO_DISMISS_MS);
     }
     return () => {
       clearTimeout(dismissTimer.current);
@@ -129,7 +131,7 @@ export function Toolbar({
       dismissTimer.current = setTimeout(() => {
         dismissTimer.current = undefined;
         setDismissedStatus(statusKey);
-      }, 900);
+      }, AUTO_DISMISS_MS);
     }
   }
 

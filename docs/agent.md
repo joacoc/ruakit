@@ -40,8 +40,11 @@ const outcome = await session.executePlan(plan);
 
 | Status | Result |
 | --- | --- |
-| `completed` | An execution result with verified outcomes and the supplied plan ID. |
+| `completed` | Execution has finished, with the supplied plan ID. Check `result.goalCompleted` and `result.verification` for verified outcomes. |
 | `needs-replan` | The failed step, fresh snapshot, and completed-step history. |
+
+New-tab activations appear in completed-step history and do not end execution.
+An empty plan ends execution; unmet checks leave `goalCompleted` and `verification` unset.
 
 `createRuntime({ protocol: "plan" })` handles replacement requests automatically.
 Use `planner(input, signal)` or a `PlanTransport` to connect your own backend.

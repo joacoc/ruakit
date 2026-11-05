@@ -57,7 +57,9 @@ afterEach(async () => {
 
 it("settles the toolbar after a clarification and new-tab click without rethinking or an ID error", async () => {
   const request = vi.fn<RequestPlan>(async (input) =>
-    input.clarifications.length
+    input.replan
+      ? { ...plan, id: 'finished', replacesPlanId: input.replan.planId, steps: [], message: 'Requested Documentation in a new tab.' }
+      : input.clarifications.length
       ? plan
       : { type: "clarify", message: "What do you want to do?" },
   );
@@ -94,13 +96,13 @@ it("settles the toolbar after a clarification and new-tab click without rethinki
   expect(rua.state.status).toBe("triggered");
   expect(rua.state.message).toContain("new tab");
   expect(rua.loading).toBe(false);
-  expect(request).toHaveBeenCalledTimes(2);
+  expect(request).toHaveBeenCalledTimes(3);
   expect(document.querySelector("#toolbar")!.textContent).not.toMatch(
     /Each plan needs|page changed/i,
   );
 });
 
-it("finishes a supplied plan handoff without claiming verified completion in usePlan", async () => {
+it("returns navigation feedback to the owner of a supplied plan", async () => {
   let executor!: RuaPlan;
   function Consumer() {
     executor = usePlan(plan);
@@ -110,13 +112,9 @@ it("finishes a supplied plan handoff without claiming verified completion in use
   await act(async () => root!.render(createElement(Consumer)));
   await act(async () => {
     const outcome = await executor.execute();
-    expect(outcome.status).toBe("completed");
-    if (outcome.status === "completed") {
-      expect(outcome.result.goalCompleted).not.toBe(true);
-      expect(outcome.result.verification).toBeUndefined();
-    }
+    expect(outcome).toMatchObject({ status: 'needs-replan',
+      completedSteps: [{ navigation: { url: 'https://docs.example/', target: '_blank' } }],
+    });
   });
-  expect(executor.state.status).toBe("triggered");
-  expect(executor.state.message).toContain("new tab");
   expect(executor.loading).toBe(false);
 });

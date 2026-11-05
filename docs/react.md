@@ -374,7 +374,10 @@ zero or reduced motion skips movement and its delay. Reduced motion also skips r
 Action completion does not snap an ongoing journey to its destination. Click
 feedback and fade wait for arrival. After reaching a control, the cursor follows
 its movement directly without replaying the curve. Outlines match the target's
-corners. The pointer has no drop shadow or glow beneath it.
+corners. Outlines respect rectangular overflow clipping from scroll containers
+and other ancestors, including across shadow roots. Clipping the outline does
+not change the pointer's destination or action target.
+The pointer has no drop shadow or glow beneath it.
 
 ### Visibility and scrolling
 
@@ -540,9 +543,9 @@ The default `messageStyle="normal"` uses an opaque `#242424` recessed panel.
 backdrop filtering is unavailable. Both work on Rua and Toolbar. Styles are
 scoped, but host CSS can still override them.
 
-Status panels appear after the toolbar expands. Settled messages remain until
-the user edits the draft, then dismiss after 900 ms. Answering keeps questions
-visible. New requests replace dismissal timers, and unmounting clears them.
+Status panels appear after the toolbar expands. Errors dismiss after 3 seconds.
+Completed and cancelled messages dismiss 3 seconds after editing starts.
+Questions stay visible while answering. New requests and unmounting clear dismissal timers.
 
 Announcements use one persistent polite live region. Reduced motion skips
 movement, forced colors disable the busy shimmer, and icon controls have

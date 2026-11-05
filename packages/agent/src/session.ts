@@ -1,7 +1,7 @@
 // Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { REQUEST_MESSAGES } from './constants.js';
 import { createRuntime as createDomRuntime } from '@ruakit/runtime';
-import type { ActionFeedbackOptions, PageState, Screenshot } from '@ruakit/runtime';
+import type { ActionFeedbackOptions, LinkNavigation, PageState, Screenshot } from '@ruakit/runtime';
 import {
   completionChecksSchema,
   evaluateCompletionChecks,
@@ -13,6 +13,7 @@ import type {
   CompletionCheck,
   ExecutionResult,
   Decision,
+  DecisionRequest,
 } from '@ruakit/schema';
 import { ClarificationNeededError, RuaKitError, parsePayload } from './errors.js';
 import { createRequestOperation, runWithSignal, validateRequestTimeout } from './operations.js';
@@ -187,7 +188,7 @@ export function createSession(options: { document?: Document } = {}): RuaSession
       prompt: string | undefined;
       requirePreparation?: boolean;
     },
-  ): Promise<Decision> {
+  ): Promise<Decision & { navigation?: LinkNavigation }> {
     signal.throwIfAborted();
     const observed = observations.get(source);
     if (!observed) {
@@ -274,6 +275,7 @@ export function createSession(options: { document?: Document } = {}): RuaSession
     }
     phase(settings, 'executing');
     const action = { signal, timeoutMs: settings.timeoutMs ?? 8000 };
+    let navigation: LinkNavigation | undefined;
     switch (step.type) {
       case 'focus':
         await dom.focus(step.target, action);
@@ -291,7 +293,7 @@ export function createSession(options: { document?: Document } = {}): RuaSession
         await dom.insertText(step.target, step.text, action);
         break;
       case 'click':
-        await dom.click(step.target, action);
+        navigation = (await dom.click(step.target, action)).navigation;
         break;
       case 'fill':
         await dom.setValue(step.target, step.value, action);
@@ -304,7 +306,7 @@ export function createSession(options: { document?: Document } = {}): RuaSession
         break;
     }
     signal.throwIfAborted();
-    return decision;
+    return navigation ? { ...decision, navigation } : decision;
   }
 
   const planEngine: PlanEngine = {
@@ -346,7 +348,7 @@ export function createSession(options: { document?: Document } = {}): RuaSession
       }),
     plan: (prompt, request, settings = {}) =>
       own(settings, async (signal) => {
-        const history: Decision[] = [];
+        const history: DecisionRequest['history'] = [];
         const events: string[] = [];
         let checks: CompletionCheck[] | undefined;
         let baseline: PageState | undefined;

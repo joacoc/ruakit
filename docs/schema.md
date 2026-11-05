@@ -255,6 +255,8 @@ const replan = replanSchema.parse({
 ```
 
 `completedSteps` holds up to 200 entries shaped like `completedStep` above.
+Completed clicks can carry `navigation: { url, target: "_blank" }` feedback.
+It records activation, not destination loading; the HTTP(S) URL is bounded to 4,000 characters.
 `failedStepId` can be null when no individual step failed. Reasons are
 `target-unavailable`, `target-stale`, and `outcome-mismatch`.
 
@@ -328,6 +330,9 @@ const decisionRequest = decisionRequestSchema.parse({
 `platform`, `canScreenshot`, and `screenshot` are optional. `checks` is also
 optional in this schema. After preparation, send the established checks with
 subsequent requests.
+
+Executed clicks in `history` can carry `navigation` feedback added by the browser.
+Planner responses cannot supply this field.
 
 ### Decisions
 

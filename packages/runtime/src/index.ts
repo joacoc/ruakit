@@ -9,6 +9,8 @@ export type {
   ActionRect,
   ControlGroup,
   ControlState,
+  ClickResult,
+  LinkNavigation,
   KeyOptions,
   PageState,
   Runtime,

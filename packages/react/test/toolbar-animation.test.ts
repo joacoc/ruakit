@@ -190,17 +190,17 @@ it.each<RequestState>([
     result: { planId: "test", status: "triggered", events: [] },
   },
 ])(
-  "dismisses $status feedback 900 ms after editing starts",
+  "dismisses $status feedback 3 seconds after editing starts",
   async (request) => {
     await mount(request, "Open billing");
     expect(visibleStatus()).toBe(true);
     // Waiting by itself does not discard the result.
-    await advance(2000);
+    await advance(4000);
     expect(visibleStatus()).toBe(true);
     await type("Next");
     await advance(500);
     await type("Next request");
-    await advance(399);
+    await advance(2499);
     expect(visibleStatus()).toBe(true);
     await advance(1);
     expect(visibleStatus()).toBe(false);
@@ -214,12 +214,12 @@ it.each<RequestState>([
   },
 );
 
-it("shows errors without a trailing period and dismisses them after 900 ms", async () => {
+it("shows errors without a trailing period and dismisses them after 3 seconds", async () => {
   await mount({ status: "failed", requestId: 1, message: "Try again." }, "Open billing");
   expect(visibleStatus()).toBe(true);
   expect(document.querySelector(".ruakit-status")?.textContent).toBe("Try again");
   expect(document.querySelector('[role="status"]')?.textContent).toBe("Try again");
-  await advance(899);
+  await advance(2999);
   expect(visibleStatus()).toBe(true);
   await advance(1);
   expect(visibleStatus()).toBe(false);
@@ -235,7 +235,7 @@ it("cancels an old dismissal when a new request starts and cleans up on unmount"
   await type("New request");
   await advance(450);
   await render(running);
-  await advance(1000);
+  await advance(3000);
   expect(visibleStatus()).toBe(true);
   expect(document.querySelector(".ruakit-status")?.textContent).toBe(
     "Thinking…",
@@ -261,7 +261,7 @@ it("does not hide a clarification when the user types an answer", async () => {
     },
   });
   await type("Workspace");
-  await advance(2000);
+  await advance(4000);
   expect(document.querySelector("section")?.hidden).toBe(false);
   expect(document.querySelector(".ruakit-question")?.textContent).toBe(
     "Which page?",

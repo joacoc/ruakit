@@ -4,9 +4,9 @@
 export const REQUEST_MESSAGES = {
   ready: "Ready",
   thinking: "Thinking…",
-  observing: "Observing the current page…",
-  replanning: "The page changed. Planning the remaining steps…",
-  checkingApproval: "Checking the approval response…",
+  observing: "Checking…",
+  replanning: "Planning…",
+  checkingApproval: "Checking response…",
   cancelling: "Cancelling request…",
   cancelled: "Request cancelled",
   triggered: "Actions triggered",

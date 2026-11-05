@@ -3,3 +3,4 @@ export * from './protocol.js';
 export * from './decision.js';
 export * from './verification.js';
 export * from './plan.js';
+export * from './navigation.js';

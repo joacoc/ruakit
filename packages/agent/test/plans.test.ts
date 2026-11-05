@@ -203,7 +203,7 @@ it.each(['checks', 'id', 'lineage', 'replay'])(
 
 it('bounds replanning and never claims success from a dispatched action alone', async () => {
   const request = vi.fn<PlanPlanner>(async (input) => ({
-    ...plan([], `plan-${input.replan ? 2 : 1}`),
+    ...plan([{ ...fill, target: { ...name, label: 'Missing' } }], `plan-${input.replan ? 2 : 1}`),
     ...(input.replan ? { replacesPlanId: input.replan.planId } : {}),
   }));
   await expect(

@@ -84,8 +84,8 @@ locators; the `{ id, version }` targets used by low-level decisions are resolved
 locally by RuaKit.
 
 Define 1–20 [completion checks](schema.md#completion-checks) for
-the user's expected result. Every check must pass before RuaKit reports
-completion. In this example, checking the field value confirms the edit, and
+the user's expected result. Every check must pass before RuaKit sets
+`goalCompleted: true`. In this example, checking the field value confirms the edit, and
 `fresh: true` requires the save message to be new since the task started. Choose
 checks your page can actually satisfy; use `verifyCompletion` for additional
 [application verification](react.md#completion-and-cancellation).

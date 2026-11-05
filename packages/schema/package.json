@@ -1,6 +1,6 @@
 {
   "name": "@ruakit/schema",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Planning and execution protocols for RuaKit",
   "type": "module",
   "license": "MIT",

@@ -48,6 +48,17 @@ export interface PageState {
   truncated: boolean;
 }
 
+/** An uncancelled native link activation, not proof that its destination loaded. */
+export interface LinkNavigation {
+  url: string;
+  target: '_blank';
+}
+
+/** Navigation feedback belongs to this click only, never to later observations. */
+export interface ClickResult extends PageState {
+  navigation?: LinkNavigation;
+}
+
 export interface ActionOptions {
   signal?: AbortSignal;
   timeoutMs?: number;
@@ -115,7 +126,7 @@ export interface Runtime {
   getState(): PageState;
   /** Render the configured root to PNG on demand using html-to-image. Private UI is excluded. */
   screenshot(options?: ActionOptions): Promise<Screenshot>;
-  click(target: Target, options?: ActionOptions): Promise<PageState>;
+  click(target: Target, options?: ActionOptions): Promise<ClickResult>;
   focus(target: Target, options?: ActionOptions): Promise<PageState>;
   blur(target: Target, options?: ActionOptions): Promise<PageState>;
   /** Insert text at the current selection using the browser editing command. */

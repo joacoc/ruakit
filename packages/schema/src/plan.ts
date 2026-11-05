@@ -1,6 +1,7 @@
 // Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 import { z } from 'zod';
 import { decisionRequestSchema, actionSchema } from './decision.js';
+import { linkNavigationSchema } from './navigation.js';
 import {
   completionChecksSchema,
   controlLocatorSchema,
@@ -53,7 +54,9 @@ export const planApprovalSchema = z.strictObject({
 export const completedPlanStepSchema = z.strictObject({
   planId: identifier,
   step: plannedStepSchema,
-});
+  navigation: linkNavigationSchema.optional(),
+}).refine((entry) => !entry.navigation || entry.step.type === 'click',
+  'Only a completed click can have navigation feedback.');
 
 /** Execution history and reason supplied when requesting a replacement plan. */
 export const replanSchema = z.strictObject({
