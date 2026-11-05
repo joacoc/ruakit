@@ -9,7 +9,9 @@ import type { RequestState } from "@ruakit/agent";
 import { Toolbar } from "../src/components/toolbar.js";
 
 const animation = vi.hoisted(() => ({
+  start: undefined as (() => void) | undefined,
   complete: undefined as ((definition: string) => void) | undefined,
+  messageDuration: undefined as number | undefined,
   reduced: false,
 }));
 
@@ -29,7 +31,11 @@ vi.mock("motion/react", async () => {
       ...props
     }: Record<string, unknown>) => {
       if (props.className === "ruakit-panel") {
+        animation.start = onAnimationStart as typeof animation.start;
         animation.complete = onAnimationComplete as typeof animation.complete;
+      }
+      if (props.className === "ruakit-message-surface ruakit-status") {
+        animation.messageDuration = (transition as { duration: number }).duration;
       }
       return createElement(tag, props, children as ReactNode);
     };
@@ -50,6 +56,8 @@ beforeEach(() => {
   vi.useFakeTimers();
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   animation.complete = undefined;
+  animation.start = undefined;
+  animation.messageDuration = undefined;
   animation.reduced = false;
 });
 afterEach(async () => {
@@ -134,6 +142,45 @@ it("reveals status only after the matching expansion completes", async () => {
   );
 });
 
+it("hides the overlay immediately during collapse and keeps it hidden through interrupted expansion", async () => {
+  await mount({ status: "cancelled", requestId: 1, message: "Request cancelled" });
+  await act(async () => animation.complete?.("expanded"));
+  const status = document.querySelector<HTMLElement>(".ruakit-status")!;
+  expect(status.hidden).toBe(false);
+  expect(visibleStatus()).toBe(true);
+  expect(animation.messageDuration).toBe(0.22);
+
+  // The request box is empty. Leaving focus and hover starts the notch collapse.
+  await act(async () => document.querySelector<HTMLTextAreaElement>("textarea")!.blur());
+  expect(document.querySelector(".ruakit-panel")?.getAttribute("data-expanded")).toBe("false");
+  expect(status.hidden).toBe(true);
+  expect(visibleStatus()).toBe(false);
+  expect(animation.messageDuration).toBe(0);
+  expect(document.querySelector('[role="status"]')?.textContent).toBe("Request cancelled");
+
+  // Reopen before the old collapse callback arrives.
+  await act(async () => document.querySelector<HTMLButtonElement>(".ruakit-opener")!.click());
+  expect(status.hidden).toBe(true);
+  await act(async () => animation.complete?.("collapsed"));
+  expect(status.hidden).toBe(true);
+  await act(async () => animation.complete?.("expanded"));
+  expect(status.hidden).toBe(false);
+  expect(visibleStatus()).toBe(true);
+  expect(animation.messageDuration).toBe(0.22);
+});
+
+it("removes a visible message when a size animation starts and restores it only when expansion settles", async () => {
+  await mount(running, "Open billing");
+  const status = document.querySelector<HTMLElement>(".ruakit-status")!;
+  expect(status.hidden).toBe(false);
+  await act(async () => animation.start?.());
+  expect(status.hidden).toBe(true);
+  expect(animation.messageDuration).toBe(0);
+  await act(async () => animation.complete?.("expanded"));
+  expect(status.hidden).toBe(false);
+  expect(animation.messageDuration).toBe(0.22);
+});
+
 it.each<RequestState>([
   { status: "cancelled", requestId: 1, message: "Request cancelled" },
   {
@@ -157,6 +204,9 @@ it.each<RequestState>([
     expect(visibleStatus()).toBe(true);
     await advance(1);
     expect(visibleStatus()).toBe(false);
+    // A normal dismissal while the input is stable retains the fade.
+    expect(document.querySelector<HTMLElement>(".ruakit-status")?.hidden).toBe(false);
+    expect(animation.messageDuration).toBe(0.22);
     expect(document.querySelector("textarea")?.value).toBe("Next request");
     expect(document.querySelector('[role="status"]')?.textContent).toBe(
       request.message,

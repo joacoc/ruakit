@@ -4,6 +4,7 @@ import { useReducedMotion } from "motion/react";
 import type { ActionRect } from "@ruakit/agent";
 import { createCursorTrajectory } from "../lib/cursor-movement.js";
 import { cursorOrigin } from "../lib/cursor-position.js";
+import { cursorHighlightClip } from "../lib/cursor-highlight.js";
 import type { CursorPoint } from "../lib/cursor-position.js";
 import type { CursorAnchor, RuaCursorProps } from "../components/cursor.js";
 import { useCursorViewport } from "./use-cursor-viewport.js";
@@ -17,6 +18,7 @@ interface Position {
   originX: number;
   originY: number;
   borderRadius: string;
+  highlightClip: string | undefined;
   tracking: boolean;
 }
 
@@ -49,6 +51,7 @@ function sameTargetPosition(
     previous.rect.width === next.rect.width &&
     previous.rect.height === next.rect.height &&
     previous.borderRadius === next.borderRadius &&
+    previous.highlightClip === next.highlightClip &&
     previous.tracking === next.tracking
   );
 }
@@ -248,6 +251,7 @@ export function useCursor({
           originX: origin?.x ?? cursorOrigin(document).x,
           originY: origin?.y ?? cursorOrigin(document).y,
           borderRadius,
+          highlightClip: cursorHighlightClip(target, bounds),
           tracking:
             dragging ||
             arrivedTarget.current === target ||

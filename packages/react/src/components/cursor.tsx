@@ -115,6 +115,7 @@ export function RuaCursor(props: RuaCursorProps): ReactElement | null {
               width: position.rect.width,
               height: position.rect.height,
               borderRadius: position.borderRadius,
+              clipPath: position.highlightClip,
             }}
           />
         )}

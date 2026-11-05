@@ -59,6 +59,7 @@ export function Toolbar({
     hovered || focused || busy || clarifying || prompt.length > 0;
   const expansion = useRef(expanded);
   const panelReady = expanded && (settled || !!reducedMotion);
+  const messageDuration = reducedMotion || !panelReady ? 0 : 0.22;
   const statusKey =
     request.status === "idle"
       ? "idle"
@@ -81,7 +82,7 @@ export function Toolbar({
     shown: { opacity: 1, y: 0, visibility: "visible" as const },
     hidden: {
       opacity: 0,
-      y: reducedMotion ? 0 : 24,
+      y: reducedMotion || !panelReady ? 0 : 24,
       transitionEnd: { visibility: "hidden" as const },
     },
   };
@@ -313,7 +314,7 @@ export function Toolbar({
           initial={{ opacity: 0, y: reducedMotion ? 0 : 24 }}
           animate={panelReady ? "shown" : "hidden"}
           variants={messageVariants}
-          transition={{ duration: reducedMotion ? 0 : 0.22 }}
+          transition={{ duration: messageDuration }}
         >
           <p className="ruakit-original">
             {TOOLBAR_TEXT.regarding} {request.originalPrompt}
@@ -360,7 +361,7 @@ export function Toolbar({
           initial={{ opacity: 0, y: reducedMotion ? 0 : 24 }}
           animate={panelReady ? "shown" : "hidden"}
           variants={messageVariants}
-          transition={{ duration: reducedMotion ? 0 : 0.22 }}
+          transition={{ duration: messageDuration }}
         >
           <p className="ruakit-original">
             {TOOLBAR_TEXT.regarding} {request.originalPrompt}
@@ -393,6 +394,7 @@ export function Toolbar({
         aria-hidden="true"
         className="ruakit-message-surface ruakit-status"
         data-visible={statusVisible}
+        hidden={!panelReady}
         initial={{
           opacity: 0,
           y: reducedMotion ? 0 : 24,
@@ -400,7 +402,7 @@ export function Toolbar({
         }}
         animate={statusVisible ? "shown" : "hidden"}
         variants={messageVariants}
-        transition={{ duration: reducedMotion ? 0 : 0.22, ease: "easeOut" }}
+        transition={{ duration: messageDuration, ease: "easeOut" }}
       >
         <span className={busy ? "ruakit-status-busy" : undefined}>
           {statusMessage}
