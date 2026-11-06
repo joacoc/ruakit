@@ -183,12 +183,6 @@ it("removes a visible message when a size animation starts and restores it only 
 
 it.each<RequestState>([
   { status: "cancelled", requestId: 1, message: "Request cancelled" },
-  {
-    status: "triggered",
-    requestId: 1,
-    message: "Done.",
-    result: { planId: "test", status: "triggered", events: [] },
-  },
 ])(
   "dismisses $status feedback 3 seconds after editing starts",
   async (request) => {
@@ -213,6 +207,25 @@ it.each<RequestState>([
     );
   },
 );
+
+it("fades action feedback 3 seconds after execution finishes without further input", async () => {
+  const render = await mount(running, "Update the topic");
+  await advance(4000);
+  expect(visibleStatus()).toBe(true);
+  await render({
+    status: "triggered",
+    requestId: running.requestId,
+    message: "Updated the topic.",
+    result: { planId: "test", status: "triggered", events: [] },
+  });
+  expect(document.querySelector("textarea")?.value).toBe("");
+  await advance(2999);
+  expect(visibleStatus()).toBe(true);
+  await advance(1);
+  expect(visibleStatus()).toBe(false);
+  expect(animation.messageDuration).toBe(0.22);
+  expect(document.querySelector<HTMLElement>(".ruakit-status")?.hidden).toBe(false);
+});
 
 it("shows errors without a trailing period and dismisses them after 3 seconds", async () => {
   await mount({ status: "failed", requestId: 1, message: "Try again." }, "Open billing");

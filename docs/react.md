@@ -543,14 +543,6 @@ The default `messageStyle="normal"` uses an opaque `#242424` recessed panel.
 backdrop filtering is unavailable. Both work on Rua and Toolbar. Styles are
 scoped, but host CSS can still override them.
 
-Status panels appear after the toolbar expands. Errors dismiss after 3 seconds.
-Completed and cancelled messages dismiss 3 seconds after editing starts.
-Questions stay visible while answering. New requests and unmounting clear dismissal timers.
-
-Announcements use one persistent polite live region. Reduced motion skips
-movement, forced colors disable the busy shimmer, and icon controls have
-accessible labels.
-
 ### Bundling and server rendering
 
 React and React DOM 18/19 are peer dependencies. Motion and Heroicons are bundled;

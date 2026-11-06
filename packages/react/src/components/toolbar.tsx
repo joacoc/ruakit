@@ -109,7 +109,7 @@ export function Toolbar({
   }, [expanded]);
 
   useEffect(() => {
-    if (request.status === "failed") {
+    if (request.status === "failed" || request.status === "triggered") {
       dismissTimer.current = setTimeout(() => {
         dismissTimer.current = undefined;
         setDismissedStatus(statusKey);
