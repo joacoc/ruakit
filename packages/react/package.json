@@ -1,6 +1,6 @@
 {
   "name": "@ruakit/react",
-  "version": "0.1.0-alpha.3",
+  "version": "0.1.0-alpha.4",
   "description": "Rua React toolbar and request hook",
   "type": "module",
   "license": "MIT",

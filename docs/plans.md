@@ -116,7 +116,7 @@ generate or expose a default ID. Import the maintained `systemPrompt` from
 Use the optional `request` callback on `useRua` to connect your own backend. It
 receives the current page and application context, and returns a plan with an ID,
 ordered steps, and completion checks. RuaKit executes the steps and requests a
-replacement plan if the page changes or the expected outcomes are missing.
+replacement plan if a target is unavailable or the expected outcomes are missing.
 
 ```tsx
 import { useRua } from "@ruakit/react";

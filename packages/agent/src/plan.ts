@@ -173,6 +173,7 @@ async function execute(
     },
   });
   const prior = [...state.completedSteps];
+  let openedNewTab = false;
   if (approval) {
     const observed = engine.snapshot();
     await requestApproval(approval, observed, signal, options, options.prompt);
@@ -266,6 +267,7 @@ async function execute(
           verification,
         );
         navigation = applied.navigation;
+        openedNewTab ||= navigation !== undefined;
       } catch (error) {
         // STALE_TARGET is raised before dispatch. Other failures can have effects;
         // stop rather than automatically retrying an uncertain action.
@@ -294,15 +296,18 @@ async function execute(
     final,
     state.baseline,
   ).passed;
-  if (!passed && plan.steps.length)
+  // A new-tab activation leaves this document unchanged. Once every planned
+  // action has run, finish the handoff instead of replanning against this page.
+  // Failed checks still cannot establish goalCompleted or verification.
+  if (!passed && plan.steps.length && !openedNewTab)
     return incomplete(
       final,
       "outcome-mismatch",
       "The plan finished, but the expected outcomes are not all present.",
       null,
     );
-  // An empty plan means the planner has no remaining actions. Execution can
-  // finish without claiming that unobserved outcomes have been verified.
+  // Empty plans and completed new-tab handoffs can finish without claiming
+  // that unobserved outcomes have been verified.
   if (passed)
     await engine.apply(
       { type: "complete", message: plan.message, checks: state.checks },

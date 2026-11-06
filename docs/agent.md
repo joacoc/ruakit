@@ -49,8 +49,11 @@ const outcome = await session.executePlan(plan);
 | `completed` | Execution has finished, with the supplied plan ID. Check `result.goalCompleted` and `result.verification` for verified outcomes. |
 | `needs-replan` | The failed step, fresh snapshot, and completed-step history. |
 
-New-tab activations appear in completed-step history and do not end execution.
-An empty plan ends execution; unmet checks leave `goalCompleted` and `verification` unset.
+A successful native `target="_blank"` click appears in completed-step history.
+RuaKit runs any remaining steps, then finishes without replanning against the
+unchanged original page. Missing or stale targets still require a replacement.
+An empty plan also ends execution. In either case, unmet checks leave
+`goalCompleted` and `verification` unset; opening a tab does not verify its contents.
 
 `createRuntime({ protocol: "plan" })` handles replacement requests automatically.
 Use `planner(input, signal)` or a `PlanTransport` to connect your own backend.

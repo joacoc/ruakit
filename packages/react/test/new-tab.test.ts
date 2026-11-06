@@ -56,13 +56,14 @@ afterEach(async () => {
 });
 
 it("settles the toolbar after a clarification and new-tab click without rethinking or an ID error", async () => {
-  const request = vi.fn<RequestPlan>(async (input) =>
-    input.replan
-      ? { ...plan, id: 'finished', steps: [], message: 'Requested Documentation in a new tab.' }
-      : input.clarifications.length
+  const clicked = vi.fn();
+  document.querySelector('a')!.addEventListener('click', clicked);
+  const request = vi.fn<RequestPlan>(async (input) => {
+    expect(input.replan).toBeNull();
+    return input.clarifications.length
       ? plan
-      : { type: "clarify", message: "What do you want to do?" },
-  );
+      : { type: "clarify", message: "What do you want to do?" };
+  });
   let rua!: RuaAgent;
   function Consumer() {
     rua = useRua({ request });
@@ -94,9 +95,10 @@ it("settles the toolbar after a clarification and new-tab click without rethinki
     ).toMatchObject({ status: "triggered", result: { status: "triggered" } });
   });
   expect(rua.state.status).toBe("triggered");
-  expect(rua.state.message).toContain("new tab");
+  expect(rua.state.message).toBe(plan.message);
   expect(rua.loading).toBe(false);
-  expect(request).toHaveBeenCalledTimes(3);
+  expect(request).toHaveBeenCalledTimes(2);
+  expect(clicked).toHaveBeenCalledOnce();
   expect(document.querySelector("#toolbar")!.textContent).not.toMatch(
     /Each plan needs|page changed/i,
   );
@@ -112,9 +114,10 @@ it("returns navigation feedback to the owner of a supplied plan", async () => {
   await act(async () => root!.render(createElement(Consumer)));
   await act(async () => {
     const outcome = await executor.execute();
-    expect(outcome).toMatchObject({ status: 'needs-replan',
+    expect(outcome).toMatchObject({ status: 'completed',
       completedSteps: [{ navigation: { url: 'https://docs.example/', target: '_blank' } }],
     });
   });
   expect(executor.loading).toBe(false);
+  expect(executor.state.status).toBe("triggered");
 });

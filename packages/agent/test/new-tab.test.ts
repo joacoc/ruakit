@@ -29,20 +29,14 @@ afterEach(() => {
 });
 
 it.each(['direct', 'clarification', 'approval'] as const)(
-  'lets the planner finish after %s using navigation receipts without replaying the click',
+  'finishes after a %s new-tab click without replanning',
   async (mode) => {
     const clicked = vi.fn();
     document.querySelector('a')!.addEventListener('click', clicked);
     const request = vi.fn<PlanPlanner>(async (input) => {
       if (mode === 'clarification' && !input.clarifications.length)
         return { type: 'clarify', message: 'What do you want to do?' };
-      if (input.replan) {
-        expect(input.replan.completedSteps).toMatchObject([{
-          navigation: { url: 'https://docs.example/', target: '_blank' },
-        }]);
-        return { ...documentation, id: 'finished',
-          message: 'Requested Documentation in a new tab.', steps: [] };
-      }
+      expect(input.replan).toBeNull();
       return mode === 'approval'
         ? { type: 'approval', message: 'Open Documentation?', plan: documentation }
         : documentation;
@@ -57,25 +51,33 @@ it.each(['direct', 'clarification', 'approval'] as const)(
       clarifications: mode === 'clarification'
         ? [{ question: 'What do you want to do?', answer: 'Proceed' }] : [],
     });
-    expect(result).toMatchObject({ status: 'triggered', planId: 'finished' });
+    expect(result).toMatchObject({ status: 'triggered', planId: 'documentation-plan' });
     expect(result.goalCompleted).not.toBe(true);
     expect(result.verification).toBeUndefined();
-    expect(result.message).toContain('new tab');
     expect(clicked).toHaveBeenCalledOnce();
-    expect(request).toHaveBeenCalledTimes(mode === 'clarification' ? 3 : 2);
+    expect(request).toHaveBeenCalledTimes(mode === 'clarification' ? 2 : 1);
     expect(onApproval).toHaveBeenCalledTimes(mode === 'approval' ? 1 : 0);
-    expect(onProgress.mock.calls.flat().join(' ')).not.toMatch(/page changed/i);
+    expect(onProgress.mock.calls.flat().join(' ')).not.toMatch(/page changed|replan/i);
     expect(task.canResume).toBe(false);
   },
 );
 
-it('returns navigation feedback for a supplied plan without deciding whether the task should stop', async () => {
-  const outcome = await createSession().executePlan(documentation);
+it.each(['url', 'text'] as const)('finishes a supplied plan with an unobservable destination %s check', async (type) => {
+  const verifyCompletion = vi.fn(() => true);
+  const outcome = await createSession().executePlan({ ...documentation, checks: type === 'url'
+    ? documentation.checks
+    : [{ type: 'text', description: 'Documentation page content', text: 'Getting started', fresh: true }],
+  }, { verifyCompletion });
   expect(outcome).toMatchObject({
-    status: 'needs-replan',
+    status: 'completed',
     completedSteps: [{ step: { id: 'open-documentation' }, navigation: { url: 'https://docs.example/', target: '_blank' } }],
-    replan: { reason: 'outcome-mismatch' },
+    result: { status: 'triggered' },
   });
+  if (outcome.status === 'completed') {
+    expect(outcome.result.goalCompleted).not.toBe(true);
+    expect(outcome.result.verification).toBeUndefined();
+  }
+  expect(verifyCompletion).not.toHaveBeenCalled();
 });
 
 it('verifies same-tab navigation normally after its own click changes the page', async () => {
@@ -95,7 +97,7 @@ it('verifies same-tab navigation normally after its own click changes the page',
   expect(result.goalCompleted).toBe(true);
   expect(result.verification?.level).toBe('observed');
   expect(request).toHaveBeenCalledOnce();
-  expect(onProgress.mock.calls.flat().join(' ')).not.toMatch(/page changed/i);
+  expect(onProgress.mock.calls.flat().join(' ')).not.toMatch(/page changed|replan/i);
 });
 
 it('still rejects invalid replacement IDs when a cancelled link activation leaves the outcome unmet', async () => {
@@ -131,39 +133,62 @@ it('opens all five profiles and continues with later work in the original tab', 
   plan.steps.push({ id: 'save', type: 'click', message: 'Save settings',
     target: { id: null, role: 'button', label: 'Save', context: null, group: null } });
   plan.checks.push({ type: 'text', description: 'Settings saved', text: 'Settings saved', fresh: true });
-  const request = vi.fn<PlanPlanner>(async (input) => {
-    if (!input.replan) return plan;
-    expect(input.replan.completedSteps).toHaveLength(6);
-    expect(input.replan.completedSteps.slice(0, 5)).toMatchObject(
-      Array.from({ length: 5 }, (_, index) => ({ navigation: { url: `https://profiles.example/${index}`, target: '_blank' } })),
-    );
-    expect(input.replan.completedSteps[5]).not.toHaveProperty('navigation');
-    return { ...plan, id: 'finished',
-      steps: [], message: 'Requested five profiles in new tabs and saved settings.' };
-  });
+  const request = vi.fn<PlanPlanner>(async () => plan);
   const result = await createSession().createPlanTask().request('Open five profiles, then save settings', request);
   expect(result.goalCompleted).not.toBe(true);
   expect(result.verification).toBeUndefined();
   expect(clicked).toHaveBeenCalledTimes(5);
   expect(saved).toHaveBeenCalledOnce();
-  expect(request).toHaveBeenCalledTimes(2);
+  expect(request).toHaveBeenCalledOnce();
 });
 
-it('lets the planner request remaining profile links across plan revisions', async () => {
+it('still replans when a later target is unavailable after a new-tab click', async () => {
   const plan = profiles();
   const clicked = vi.fn();
   for (const link of document.querySelectorAll('a')) link.addEventListener('click', clicked);
+  const missing: PlannedStep = { id: 'missing', type: 'click', message: 'Open missing link',
+    target: { id: null, role: 'link', label: 'Missing', context: null, group: null } };
   const request = vi.fn<PlanPlanner>(async (input) => {
-    const completed = input.replan?.completedSteps.length ?? 0;
-    return { ...plan, id: `revision-${completed}`,
-
-      steps: completed === 0 ? plan.steps.slice(0, 1) : completed === 1 ? plan.steps.slice(1) : [],
-    };
+    if (!input.replan) return { ...plan, steps: [plan.steps[0]!, missing] };
+    expect(input.replan.reason).toBe('target-unavailable');
+    expect(input.replan.completedSteps).toMatchObject([{
+      step: { id: 'profile-0' }, navigation: { url: 'https://profiles.example/0', target: '_blank' },
+    }]);
+    return { ...plan, id: 'remaining-profiles', steps: plan.steps.slice(1) };
   });
   const result = await createSession().createPlanTask().request('Open five profiles', request);
   expect(result.goalCompleted).not.toBe(true);
   expect(clicked).toHaveBeenCalledTimes(5);
-  expect(request).toHaveBeenCalledTimes(3);
+  expect(request).toHaveBeenCalledTimes(2);
+});
+
+it("does not let a previous revision's new-tab receipt hide a later outcome mismatch", async () => {
+  document.body.insertAdjacentHTML('beforeend', '<button>Save</button>');
+  const request = vi.fn<PlanPlanner>(async (input) => ({
+    ...documentation, id: `revision-${input.replan?.completedSteps.length ?? 0}`,
+    steps: !input.replan ? [...documentation.steps, {
+      id: 'missing', type: 'click', message: 'Open missing link',
+      target: { id: null, role: 'link', label: 'Missing', context: null, group: null },
+    }] : [{ id: 'save', type: 'click', message: 'Save settings',
+      target: { id: null, role: 'button', label: 'Save', context: null, group: null } }],
+  }));
+  await expect(createSession().createPlanTask().request('Open Docs and save', request, { maxReplans: 1 }))
+    .rejects.toMatchObject({ code: 'REPLAN_LIMIT' });
+  expect(request).toHaveBeenCalledTimes(2);
+});
+
+it('verifies original-page outcomes normally when a plan also opens a new tab', async () => {
+  document.body.insertAdjacentHTML('beforeend', '<p></p>');
+  document.querySelector('a')!.onclick = () => { document.querySelector('p')!.textContent = 'Documentation requested'; };
+  const verifyCompletion = vi.fn(() => true);
+  const request = vi.fn<PlanPlanner>(async () => ({ ...documentation,
+    checks: [{ type: 'text', description: 'Documentation requested', text: 'Documentation requested', fresh: true }],
+  }));
+  const result = await createSession().createPlanTask().request('Open Docs', request, { verifyCompletion });
+  expect(result.goalCompleted).toBe(true);
+  expect(result.verification?.level).toBe('confirmed');
+  expect(verifyCompletion).toHaveBeenCalledOnce();
+  expect(request).toHaveBeenCalledOnce();
 });
 
 it('lets the decision planner choose all five clicks and completion from observed application feedback', async () => {
