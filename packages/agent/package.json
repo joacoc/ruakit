@@ -1,6 +1,6 @@
 {
   "name": "@ruakit/agent",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "description": "Framework-agnostic agent orchestration",
   "type": "module",
   "license": "MIT",
@@ -19,8 +19,8 @@
   },
   "sideEffects": false,
   "scripts": {
-    "build": "tsc -p tsconfig.json && node ../shared/scripts/minify.mjs",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "build": "node scripts/generate-prompt.mjs && tsc -p tsconfig.json && node ../shared/scripts/minify.mjs",
+    "typecheck": "node scripts/generate-prompt.mjs && tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
     "@ruakit/runtime": "workspace:^",

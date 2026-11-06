@@ -107,7 +107,27 @@ it('reports a missing or ambiguous target without executing it or contacting a b
   ).toEqual(['', '']);
 });
 
-it('replans from fresh state with locked checks, completed steps and linked backend IDs', async () => {
+it('finishes after a successful Open click without replanning when its outcome is observed', async () => {
+  document.body.innerHTML = '<button>Open</button><p></p>';
+  const clicked = vi.fn(() => {
+    document.querySelector('p')!.textContent = 'Document opened';
+  });
+  document.querySelector('button')!.onclick = clicked;
+  const request = vi.fn<PlanPlanner>(async () => ({
+    ...plan([{
+      id: 'open', type: 'click', message: 'Open the document', target: button('Open'),
+    }]),
+    checks: [{ type: 'text', description: 'Document is open', text: 'Document opened', fresh: true }],
+  }));
+
+  await expect(createSession().createPlanTask().request('Open the document', request))
+    .resolves.toMatchObject({ goalCompleted: true, planId: 'plan-1' });
+
+  expect(clicked).toHaveBeenCalledOnce();
+  expect(request).toHaveBeenCalledOnce();
+});
+
+it('replans from fresh state with locked checks, completed steps and new revision IDs', async () => {
   document.body.innerHTML = '<button>Settings</button>';
   const clicked = vi.fn(() =>
     document.body.insertAdjacentHTML(
@@ -122,7 +142,6 @@ it('replans from fresh state with locked checks, completed steps and linked back
     return input.replan
       ? {
           ...plan([fill], 'plan-2'),
-          replacesPlanId: 'plan-1',
         }
       : plan([
           {
@@ -161,7 +180,7 @@ it('retains the baseline and progress while a replanning task waits for clarific
       return { type: 'clarify', message: 'Use Name?' };
     expect(input.replan?.planId).toBe('plan-1');
     expect(input.checks).toEqual(checks);
-    return { ...plan([fill], 'plan-2'), replacesPlanId: 'plan-1' };
+    return { ...plan([fill], 'plan-2') };
   };
   await expect(task.request('Enter Ana', request)).rejects.toBeInstanceOf(
     ClarificationNeededError,
@@ -172,7 +191,7 @@ it('retains the baseline and progress while a replanning task waits for clarific
   expect(result.goalCompleted).toBe(true);
 });
 
-it.each(['checks', 'id', 'lineage', 'replay'])(
+it.each(['checks', 'id', 'replay'])(
   'rejects a replacement plan with invalid %s',
   async (kind) => {
     document.body.insertAdjacentHTML('beforeend', '<button>Open</button>');
@@ -187,11 +206,10 @@ it.each(['checks', 'id', 'lineage', 'replay'])(
     const request: PlanPlanner = async (input) => {
       if (!input.replan)
         return plan([open, { ...fill, target: { ...name, label: 'Missing' } }]);
-      const next = { ...plan([fill], 'plan-2'), replacesPlanId: 'plan-1' };
+      const next = { ...plan([fill], 'plan-2') };
       if (kind === 'checks')
         return { ...next, checks: [{ ...checks[0]!, equals: 'Eve' }] };
       if (kind === 'id') return { ...next, id: 'plan-1' };
-      if (kind === 'lineage') return { ...next, replacesPlanId: 'unrelated' };
       return { ...next, steps: [{ ...open, id: 'replayed-open' }, fill] };
     };
     await expect(
@@ -201,10 +219,37 @@ it.each(['checks', 'id', 'lineage', 'replay'])(
   },
 );
 
+it.each([false, true])('rejects a reused revision ID after replanning (approval: %s)', async (approval) => {
+  const repeated = plan([fill]);
+  const fetcher = vi.fn<typeof fetch>()
+    .mockResolvedValueOnce(Response.json(plan([{ ...fill, target: { ...name, label: 'Missing' } }])))
+    .mockResolvedValueOnce(Response.json(approval
+      ? { type: 'approval', message: 'Enter Ana?', plan: repeated }
+      : repeated));
+  const transport = createPlanTransport({ document, fetch: fetcher });
+  const onProgress = vi.fn();
+  const onPlan = vi.fn();
+  const onApproval = vi.fn(() => true);
+
+  await expect(createSession().createPlanTask().request('Enter Ana', transport.plan, {
+    onProgress, onPlan, onApproval,
+  })).rejects.toMatchObject({
+    code: 'INVALID_PLAN',
+    message: 'The planner reused plan ID "plan-1". Each plan revision needs a new ID.',
+  });
+
+  expect(onProgress).toHaveBeenCalledOnce();
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  expect(JSON.parse(fetcher.mock.calls[1]![1]!.body as string).replan.planId).toBe('plan-1');
+  expect(onPlan).toHaveBeenCalledOnce();
+  expect(onApproval).not.toHaveBeenCalled();
+  expect(document.querySelector('input')!.value).toBe('');
+});
+
 it('bounds replanning and never claims success from a dispatched action alone', async () => {
   const request = vi.fn<PlanPlanner>(async (input) => ({
     ...plan([{ ...fill, target: { ...name, label: 'Missing' } }], `plan-${input.replan ? 2 : 1}`),
-    ...(input.replan ? { replacesPlanId: input.replan.planId } : {}),
+
   }));
   await expect(
     createSession()

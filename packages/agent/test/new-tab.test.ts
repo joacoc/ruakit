@@ -40,7 +40,7 @@ it.each(['direct', 'clarification', 'approval'] as const)(
         expect(input.replan.completedSteps).toMatchObject([{
           navigation: { url: 'https://docs.example/', target: '_blank' },
         }]);
-        return { ...documentation, id: 'finished', replacesPlanId: input.replan.planId,
+        return { ...documentation, id: 'finished',
           message: 'Requested Documentation in a new tab.', steps: [] };
       }
       return mode === 'approval'
@@ -138,7 +138,7 @@ it('opens all five profiles and continues with later work in the original tab', 
       Array.from({ length: 5 }, (_, index) => ({ navigation: { url: `https://profiles.example/${index}`, target: '_blank' } })),
     );
     expect(input.replan.completedSteps[5]).not.toHaveProperty('navigation');
-    return { ...plan, id: 'finished', replacesPlanId: input.replan.planId,
+    return { ...plan, id: 'finished',
       steps: [], message: 'Requested five profiles in new tabs and saved settings.' };
   });
   const result = await createSession().createPlanTask().request('Open five profiles, then save settings', request);
@@ -156,7 +156,7 @@ it('lets the planner request remaining profile links across plan revisions', asy
   const request = vi.fn<PlanPlanner>(async (input) => {
     const completed = input.replan?.completedSteps.length ?? 0;
     return { ...plan, id: `revision-${completed}`,
-      ...(input.replan ? { replacesPlanId: input.replan.planId } : {}),
+
       steps: completed === 0 ? plan.steps.slice(0, 1) : completed === 1 ? plan.steps.slice(1) : [],
     };
   });

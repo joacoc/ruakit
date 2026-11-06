@@ -289,7 +289,11 @@ async function execute(
   }
   signal.throwIfAborted();
   const final = engine.snapshot();
-  const passed = evaluateCompletionChecks(state.checks, final, state.baseline).passed;
+  const passed = evaluateCompletionChecks(
+    state.checks,
+    final,
+    state.baseline,
+  ).passed;
   if (!passed && plan.steps.length)
     return incomplete(
       final,
@@ -299,13 +303,14 @@ async function execute(
     );
   // An empty plan means the planner has no remaining actions. Execution can
   // finish without claiming that unobserved outcomes have been verified.
-  if (passed) await engine.apply(
-    { type: "complete", message: plan.message, checks: state.checks },
-    final,
-    signal,
-    options,
-    verification,
-  );
+  if (passed)
+    await engine.apply(
+      { type: "complete", message: plan.message, checks: state.checks },
+      final,
+      signal,
+      options,
+      verification,
+    );
   return {
     status: "completed",
     planId: plan.id,
@@ -315,13 +320,17 @@ async function execute(
       status: "triggered",
       message: plan.message,
       events: [...state.events],
-      ...(passed ? {
-        goalCompleted: true as const,
-        verification: {
-          level: options.verifyCompletion ? "confirmed" as const : "observed" as const,
-          checks: structuredClone(state.checks),
-        },
-      } : {}),
+      ...(passed
+        ? {
+            goalCompleted: true as const,
+            verification: {
+              level: options.verifyCompletion
+                ? ("confirmed" as const)
+                : ("observed" as const),
+              checks: structuredClone(state.checks),
+            },
+          }
+        : {}),
     },
   };
 }
@@ -437,10 +446,10 @@ export function createPlanTask(engine: PlanEngine, own: Owner): PlanTask {
             continue;
           }
           const plan = "id" in response ? response : response.plan;
-          if (ids.has(plan.id) || plan.replacesPlanId !== replan?.planId)
+          if (ids.has(plan.id))
             throw new RuaKitError(
               "INVALID_PLAN",
-              "Each plan needs a new ID and the correct replacement plan ID.",
+              `The planner reused plan ID ${JSON.stringify(plan.id)}. Each plan revision needs a new ID.`,
             );
           if (replan && ++replacements > limit)
             throw new RuaKitError(

@@ -1,5 +1,6 @@
 // Copyright 2026 RuaKit contributors. SPDX-License-Identifier: MIT
 export { createRuntime } from './runtime.js';
+export { systemPrompt } from './prompt.js';
 export type { RuntimeOptions, PlanRuntimeOptions, RequestOptions, RuaKitRuntime } from './runtime.js';
 export { createSession } from './session.js';
 export type {

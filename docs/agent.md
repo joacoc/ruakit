@@ -20,6 +20,12 @@ const result = await runtime.request("Open billing", {
 });
 ```
 
+## Planner prompt
+
+Import `systemPrompt` from `@ruakit/agent` in your planner endpoint.
+It is generated from [PROMPT.md](PROMPT.md) during the package build. Append
+application-specific instructions when needed.
+
 ## Full-plan execution and replanning
 
 Use `protocol: "plan"` to request a full [plan](schema.md#plans): an ID, message,
@@ -59,7 +65,7 @@ reason, and fresh page state.
 
 Replacement plans must:
 
-- Have a new plan ID and retain the original completion checks.
+- Have a new plan ID and retain the original completion checks. No parent or replacement field is required.
 - Keep completed step IDs attached to the same actions.
 - Never repeat completed actions that could create duplicate effects, even with new step IDs.
 

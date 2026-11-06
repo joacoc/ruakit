@@ -33,7 +33,7 @@ Chats are limited to Q&A or guidance and lack access to your UI. RuaKit brings a
 Install the required packages:
 
 ```bash
-npm install @ruakit/react @ruakit/schema
+npm install @ruakit/react @ruakit/schema @ruakit/agent
 ```
 
 #### 1. Set up an endpoint
@@ -45,20 +45,20 @@ The example below uses the `ai` library as one option. You can use any provider 
 ```ts
 // In Next.js: app/v1/plan/route.ts
 import { generateObject } from "ai";
-import { planRequestSchema, planResponseSchema } from "@ruakit/schema";
+import { systemPrompt } from "@ruakit/agent";
+import { planRequestSchema, planDraftResponseSchema, planResponseSchema } from "@ruakit/schema";
 
 export async function POST(req: Request) {
   const input = planRequestSchema.parse(await req.json());
 
   const { object } = await generateObject({
     model: "your-model",
-    schema: planResponseSchema,
-    // Replace "..." with docs/PROMPT.md, and adapt to your application.
-    system: `...`,
+    schema: planDraftResponseSchema,
+    system: systemPrompt,
     prompt: JSON.stringify(input),
   });
 
-  return Response.json(object);
+  return Response.json(planResponseSchema.parse(object));
 }
 ```
 

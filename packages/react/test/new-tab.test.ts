@@ -58,7 +58,7 @@ afterEach(async () => {
 it("settles the toolbar after a clarification and new-tab click without rethinking or an ID error", async () => {
   const request = vi.fn<RequestPlan>(async (input) =>
     input.replan
-      ? { ...plan, id: 'finished', replacesPlanId: input.replan.planId, steps: [], message: 'Requested Documentation in a new tab.' }
+      ? { ...plan, id: 'finished', steps: [], message: 'Requested Documentation in a new tab.' }
       : input.clarifications.length
       ? plan
       : { type: "clarify", message: "What do you want to do?" },

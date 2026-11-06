@@ -215,7 +215,7 @@ it('requires a new approval ID for a second gate in the same operation', async (
     return {
       type: 'approval', message: `Enter ${value}?`,
       plan: {
-        id: `enter-${value}`, ...(input.replan ? { replacesPlanId: input.replan.planId } : {}),
+        id: `enter-${value}`,
         message: 'Entered', checks,
         steps: [{ id: `name-${value}`, type: 'fill', message: `Enter ${value}`, target, value }],
       },

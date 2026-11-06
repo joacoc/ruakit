@@ -49,7 +49,7 @@ it.each<CursorVisibility>(['plan', 'session'])(
         reachedPause();
         await pause;
         return {
-          id: 'last-name', replacesPlanId: input.replan.planId, message: 'Done', checks,
+          id: 'last-name', message: 'Done', checks,
           steps: [{ id: 'last', type: 'fill', message: 'Fill last name', target: target('Last name'), value: 'Morgan' }],
         };
       }

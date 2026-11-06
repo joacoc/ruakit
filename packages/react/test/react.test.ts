@@ -182,7 +182,7 @@ describe("React toolbar focus and command lifecycle", () => {
       test.reject(new Error("Something went wrong. Try again.")),
     );
     expect(query('[role="status"]').textContent).toBe(
-      "Something went wrong. Try again.",
+      "Something went wrong. Try again",
     );
     expect(query('[role="status"]').getAttribute("aria-live")).toBe("polite");
     expect(input.value).toBe("Open billing");

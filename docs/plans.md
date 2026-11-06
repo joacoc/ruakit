@@ -90,10 +90,26 @@ the user's expected result. Every check must pass before RuaKit sets
 checks your page can actually satisfy; use `verifyCompletion` for additional
 [application verification](react.md#completion-and-cancellation).
 
-When `useRua` asks for a replacement, give it a new plan `id`, set
-`replacesPlanId` to `input.replan.planId`, and preserve `input.checks` unchanged.
+When `useRua` asks for a replacement, give it a new plan `id` and preserve
+`input.checks` unchanged. No parent or replacement ID is needed.
 Use `input.replan.completedSteps` to plan the remaining work without repeating
 completed actions.
+
+## Generating plan IDs
+
+Pass `planDraftResponseSchema` from `@ruakit/schema` to your model. It contains
+`message`, `steps`, and `checks`, including the corresponding approval wrapper,
+without a plan ID. Step and target IDs retain their existing meaning.
+Return `planResponseSchema.parse(object)` from your endpoint to validate the model
+output and use Zod defaults to assign a fresh UUID v4 when a plan ID is missing.
+This also handles approval plans and leaves clarification, screenshot, and unsupported responses unchanged.
+See the [endpoint example](../README.md#1-set-up-an-endpoint).
+
+`planResponseSchema` validates the final response, including the assigned ID.
+Parsing that response again preserves its ID. Always send the draft schema to
+the model: it omits the UUID default entirely, so converting it to JSON does not
+generate or expose a default ID. Import the maintained `systemPrompt` from
+`@ruakit/agent` instead of copying the Markdown prompt into your app.
 
 ## Custom planners
 
@@ -133,6 +149,6 @@ function AgentHelp() {
 
 The callback receives a [planning request](schema.md#planning-requests)
 (`PlanRequest`) and returns a [planning response](schema.md#planning-responses)
-(`PlanResponse`). Each replacement plan has a new backend ID and references the
-previous plan through `replacesPlanId`. Completed steps and the original completion
-checks carry forward; replanning is bounded by `maxReplans` (default 3).
+(`PlanResponse`). Each replacement plan has a new backend ID. The runtime keeps
+the task history without a parent or replacement field. Completed steps and the
+original completion checks carry forward; replanning is bounded by `maxReplans` (default 3).

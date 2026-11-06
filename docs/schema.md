@@ -119,8 +119,8 @@ const plan = planSchema.parse({
 });
 ```
 
-The optional `replacesPlanId` field links a replacement to its previous plan.
-A plan ID identifies a backend revision. An operation ID identifies the entire
+A plan ID identifies a backend revision. Every new revision gets a new ID;
+parent and replacement fields are not part of the protocol. An operation ID identifies the entire
 local user request, which may need more than one revision.
 
 ## Planning requests
@@ -196,6 +196,13 @@ import { planResponseSchema } from "@ruakit/schema";
 const response = planResponseSchema.parse(plan);
 ```
 
+For model generation, use `planDraftResponseSchema` instead. It omits the plan
+ID from both ordinary and approval plans. `planResponseSchema.parse(draft)`
+uses Zod defaults to assign a fresh UUID v4 when an ordinary or approval plan has
+no ID. Supplied IDs are validated and preserved; reparsing a response does not
+change its identity. No parent or replacement field is added. Both schemas are
+exported by `@ruakit/schema`. Only the draft schema should be sent to the model.
+
 When the planner needs more information, a screenshot, or cannot handle the
 request, it returns a message instead.
 
@@ -260,7 +267,8 @@ It records activation, not destination loading; the HTTP(S) URL is bounded to 4,
 `failedStepId` can be null when no individual step failed. Reasons are
 `target-unavailable`, `target-stale`, and `outcome-mismatch`.
 
-The replacement needs a new ID, the correct `replacesPlanId`, and the same checks.
+The replacement needs a new ID and the same checks. The runtime retains task
+history; the response does not need a parent or replacement field.
 In this example, the browser can resolve the same locator again against a fresh
 snapshot.
 
@@ -268,11 +276,10 @@ snapshot.
 const replacementPlan = planSchema.parse({
   ...plan,
   id: "plan-2",
-  replacesPlanId: plan.id,
 });
 ```
 
-The agent enforces revision links, preserved checks, and completed-action history
+The agent enforces distinct revision IDs, preserved checks, and completed-action history
 across the task. Parsing an individual plan validates its shape.
 
 ## One decision at a time

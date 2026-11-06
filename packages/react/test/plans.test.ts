@@ -152,7 +152,7 @@ it('retains the original planner and context through replanning and clarificatio
       if (!input.clarifications.length)
         return { type: 'clarify', message: 'Use Name?' };
       expect(input.checks).toEqual(plan.checks);
-      return { ...plan, id: 'replacement-plan', replacesPlanId: plan.id };
+      return { ...plan, id: 'replacement-plan' };
     },
   );
   let rua!: RuaAgent<typeof context>;
