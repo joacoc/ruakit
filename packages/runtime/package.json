@@ -1,6 +1,6 @@
 {
   "name": "@ruakit/runtime",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "description": "Observe and interact with the rendered application",
   "type": "module",
   "license": "MIT",

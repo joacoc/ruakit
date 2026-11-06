@@ -1,6 +1,6 @@
 {
   "name": "@ruakit/nextjs",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Server-side Next.js route handler for RuaKit planning",
   "type": "module",
   "license": "MIT",
