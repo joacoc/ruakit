@@ -50,7 +50,7 @@ export async function POST(req: Request) {
   const input = planRequestSchema.parse(await req.json());
 
   const { object } = await generateObject({
-    model: "gpt-6.1-terra",
+    model: "openai/gpt-6.1-terra",
     schema: planDraftResponseSchema,
     system: systemPrompt,
     prompt: JSON.stringify(input),
